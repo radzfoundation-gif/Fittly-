@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fittly — Landing Pages
 
-## Getting Started
+Koleksi landing page dan UI demo berbasis **Next.js 16**, **React 19**, dan **Tailwind CSS v4**. Project ini berisi tiga halaman utama dengan desain modern dan interaktif.
 
-First, run the development server:
+---
+
+## Halaman
+
+| Route | Nama | Deskripsi |
+|---|---|---|
+| `/` | Fittly Landing Page | Landing page produk AI virtual try-on fashion |
+| `/cinematic` | AURA Cinematic Hero | Landing page dark-theme dengan background video |
+| `/workspace` | Fittly Studio | Aplikasi workspace virtual try-on interaktif |
+
+---
+
+## Tech Stack
+
+- **[Next.js 16.2.4](https://nextjs.org)** — App Router, Turbopack
+- **[React 19](https://react.dev)** — dengan hooks terbaru
+- **[Tailwind CSS v4](https://tailwindcss.com)** — utility-first CSS
+- **[@iconify/react](https://iconify.design)** — icon library (Solar icon set)
+- **[@react-three/fiber](https://docs.pmnd.rs/react-three-fiber)** + **[drei](https://github.com/pmndrs/drei)** — 3D rendering
+- **[Three.js](https://threejs.org)** — WebGL 3D engine
+- **TypeScript** — type safety
+
+---
+
+## Memulai
+
+### Prasyarat
+
+- Node.js 20+
+- npm / yarn / pnpm
+
+### Instalasi
+
+```bash
+npm install
+```
+
+### Jalankan Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) di browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+### Lint
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Struktur Project
 
-## Deploy on Vercel
+```
+landing-pages/
+├── public/
+│   ├── bg-tropical.mp4       # Background video untuk workspace
+│   ├── mascot.mp4            # Video mascot hero section
+│   └── FinalBaseMesh.obj     # 3D model mannequin
+├── src/
+│   └── app/
+│       ├── layout.tsx        # Root layout + Google Fonts
+│       ├── page.tsx          # Fittly landing page (/)
+│       ├── globals.css       # Global styles + Tailwind import
+│       ├── cinematic/
+│       │   └── page.tsx      # AURA cinematic page (/cinematic)
+│       └── workspace/
+│           └── page.tsx      # Fittly Studio (/workspace)
+├── AGENTS.md                 # Aturan untuk AI agent
+├── CLAUDE.md                 # Referensi ke AGENTS.md
+├── docs/
+│   ├── pages.md              # Dokumentasi setiap halaman
+│   ├── workspace.md          # Panduan fitur workspace
+│   └── components.md         # Referensi komponen & pola UI
+├── next.config.ts
+├── tailwind.config (via postcss.config.mjs)
+└── tsconfig.json
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Dokumentasi
+
+Lihat folder [`docs/`](./docs/) untuk dokumentasi lengkap:
+
+- [`docs/pages.md`](./docs/pages.md) — Deskripsi dan fitur setiap halaman
+- [`docs/workspace.md`](./docs/workspace.md) — Panduan lengkap fitur Fittly Studio
+- [`docs/components.md`](./docs/components.md) — Referensi komponen dan pola UI yang digunakan
+
+---
+
+## Deploy
+
+Deploy paling mudah menggunakan [Vercel](https://vercel.com):
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+
+Atau platform lain yang mendukung Next.js (Netlify, Railway, dll).
