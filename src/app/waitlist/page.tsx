@@ -12,6 +12,17 @@ const ROLES = [
 
 const PLATFORMS = ['Shopify', 'WooCommerce', 'Tokopedia', 'Shopee', 'Custom API', 'Other'];
 
+const REFERRAL_SOURCES = [
+  { id: 'instagram',  label: 'Instagram',  icon: 'skill-icons:instagram',           color: '#E1306C' },
+  { id: 'tiktok',     label: 'TikTok',     icon: 'logos:tiktok-icon',               color: '#010101' },
+  { id: 'twitter',    label: 'X / Twitter',icon: 'skill-icons:twitter',             color: '#1DA1F2' },
+  { id: 'youtube',    label: 'YouTube',    icon: 'logos:youtube-icon',              color: '#FF0000' },
+  { id: 'facebook',   label: 'Facebook',   icon: 'logos:facebook',                  color: '#1877F2' },
+  { id: 'linkedin',   label: 'LinkedIn',   icon: 'skill-icons:linkedin',            color: '#0A66C2' },
+  { id: 'google',     label: 'Google',     icon: 'logos:google-icon',               color: '#4285F4' },
+  { id: 'friend',     label: 'A Friend',   icon: 'solar:users-group-rounded-bold-duotone', color: '#8B5CF6' },
+];
+
 type Step = 'role' | 'details' | 'success';
 
 export default function WaitlistPage() {
@@ -227,16 +238,35 @@ export default function WaitlistPage() {
 
               {/* Referral */}
               <div>
-                <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-zinc-500 mb-2 uppercase tracking-wider">
                   How did you hear about us? <span className="normal-case text-zinc-400 font-normal">(optional)</span>
                 </label>
-                <input
-                  type="text"
-                  value={form.referral}
-                  onChange={(e) => setForm({ ...form, referral: e.target.value })}
-                  placeholder="Instagram, friend, Google..."
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-zinc-400 shadow-sm"
-                />
+                <div className="grid grid-cols-4 gap-2">
+                  {REFERRAL_SOURCES.map((src) => (
+                    <button
+                      key={src.id}
+                      type="button"
+                      onClick={() => setForm({ ...form, referral: form.referral === src.id ? '' : src.id })}
+                      className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-200 group ${
+                        form.referral === src.id
+                          ? `border-[${src.color}] bg-[${src.color}]/10 shadow-[0_0_0_3px_${src.color}20]`
+                          : 'border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50'
+                      }`}
+                      style={form.referral === src.id ? { borderColor: src.color, backgroundColor: src.color + '15' } : {}}
+                    >
+                      <Icon
+                        icon={src.icon}
+                        className="text-2xl transition-transform group-hover:scale-110"
+                        style={{ color: form.referral === src.id ? src.color : '#71717a' }}
+                      />
+                      <span className={`text-[10px] font-semibold leading-none transition-colors ${
+                        form.referral === src.id ? 'text-zinc-900' : 'text-zinc-400'
+                      }`}>
+                        {src.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Privacy note */}

@@ -3,6 +3,25 @@
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+
+// Scroll reveal wrapper
+function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const { ref, visible } = useScrollReveal<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(32px)',
+        transition: `opacity 0.6s ease ${delay}ms, transform 0.6s cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function CinematicHero() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -381,6 +400,10 @@ export default function CinematicHero() {
           50% { transform: translateY(-15px) rotate(1.5deg); }
           100% { transform: translateY(0px) rotate(0deg); }
         }
+        @keyframes heroFadeUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
       `}} />
 
       {/* Hero Content */}
@@ -389,23 +412,23 @@ export default function CinematicHero() {
         {/* Left: Text Content */}
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
           {/* Eyebrow Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-zinc-200 mb-8 text-xs font-medium text-zinc-600 shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-zinc-200 mb-8 text-xs font-medium text-zinc-600 shadow-sm" style={{animation:'heroFadeUp 0.6s ease 0.2s both'}}>
             <Icon icon="solar:star-fall-bold" width="16" height="16" className="text-blue-500" />
             <span>#1 Virtual Fitting Room in Southeast Asia</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter mb-6 text-zinc-900 leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter mb-6 text-zinc-900 leading-[1.1]" style={{animation:'heroFadeUp 0.7s ease 0.35s both'}}>
             Try Before You Buy.<br /> Shop with Confidence.
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base md:text-lg text-zinc-500 font-light max-w-xl mb-10 leading-relaxed">
+          <p className="text-base md:text-lg text-zinc-500 font-light max-w-xl mb-10 leading-relaxed" style={{animation:'heroFadeUp 0.7s ease 0.5s both'}}>
             Reduce hesitation in online fashion shopping. Fittly uses AI to provide realistic visualization of clothing on your body with just one selfie. Increase conversions and lower return rates.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto relative z-30">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto relative z-30" style={{animation:'heroFadeUp 0.7s ease 0.65s both'}}>
             <Link href="/workspace" className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_4px_14px_0_rgba(59,130,246,0.39)]">
               Try Virtual Try-On
               <Icon icon="solar:arrow-right-linear" width="20" height="20" strokeWidth="1.5" className="text-lg" />
@@ -418,7 +441,7 @@ export default function CinematicHero() {
         </div>
 
         {/* Right: Mascot Video */}
-        <div className="flex-1 flex justify-center md:justify-end w-full max-w-[280px] sm:max-w-sm lg:max-w-md mx-auto md:mx-0">
+        <div className="flex-1 flex justify-center md:justify-end w-full max-w-[280px] sm:max-w-sm lg:max-w-md mx-auto md:mx-0" style={{animation:'heroFadeUp 0.8s ease 0.5s both'}}>
           <div 
             className="relative w-full aspect-square rounded-[3rem] overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-white/50 bg-white/40 backdrop-blur-md p-2"
             style={{ animation: 'floatMascot 6s ease-in-out infinite' }}

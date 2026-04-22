@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fustat, Noto_Sans, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
+import IntroAnimation from "@/components/IntroAnimation";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,7 +38,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${fustat.variable} ${notoSans.variable} ${schibstedGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <IntroAnimation />
+        {children}
+      </body>
     </html>
   );
 }
