@@ -367,9 +367,9 @@ export default function CinematicHero() {
           {/* Actions */}
           <div className="flex items-center gap-5">
             <button type="button" onClick={() => setActiveModal('Sign In')} className="hidden sm:block text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors duration-300">Sign In</button>
-            <button type="button" onClick={() => setActiveModal('Become a Merchant')} className="px-5 py-2.5 rounded-full bg-zinc-900 text-xs font-medium text-white hover:bg-zinc-800 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md">
-              Start Free
-            </button>
+            <Link href="/waitlist" className="px-5 py-2.5 rounded-full bg-zinc-900 text-xs font-medium text-white hover:bg-zinc-800 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md">
+              Join Waitlist
+            </Link>
           </div>
         </div>
       </header>
