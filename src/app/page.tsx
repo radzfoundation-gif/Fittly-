@@ -330,10 +330,10 @@ export default function CinematicHero() {
   };
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden flex flex-col justify-between bg-white text-zinc-900 selection:bg-blue-500/20 selection:text-blue-900 font-sans">
+    <main className="relative min-h-screen w-full flex flex-col justify-between bg-white text-zinc-900 selection:bg-blue-500/20 selection:text-blue-900 font-sans" style={{ overflowX: 'hidden' }}>
       {/* Dual Gradient Overlay Background */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="fixed inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `
             linear-gradient(to right, rgba(229,231,235,0.8) 1px, transparent 1px),
@@ -384,7 +384,7 @@ export default function CinematicHero() {
       `}} />
 
       {/* Hero Content */}
-      <div className="relative z-20 flex-1 flex flex-col md:flex-row items-center justify-center px-6 md:px-12 max-w-7xl mx-auto w-full gap-12 lg:gap-24 mt-[-2%]">
+      <div className="relative z-20 flex-1 flex flex-col md:flex-row items-center justify-center px-6 md:px-12 max-w-7xl mx-auto w-full gap-12 lg:gap-24 py-12 md:py-0 min-h-[calc(100vh-120px)]">
         
         {/* Left: Text Content */}
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
@@ -395,7 +395,7 @@ export default function CinematicHero() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-7xl font-semibold tracking-tighter mb-6 text-zinc-900 leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter mb-6 text-zinc-900 leading-[1.1]">
             Try Before You Buy.<br /> Shop with Confidence.
           </h1>
 
@@ -418,7 +418,7 @@ export default function CinematicHero() {
         </div>
 
         {/* Right: Mascot Video */}
-        <div className="flex-1 flex justify-center md:justify-end w-full max-w-sm lg:max-w-md">
+        <div className="flex-1 flex justify-center md:justify-end w-full max-w-[280px] sm:max-w-sm lg:max-w-md mx-auto md:mx-0">
           <div 
             className="relative w-full aspect-square rounded-[3rem] overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-white/50 bg-white/40 backdrop-blur-md p-2"
             style={{ animation: 'floatMascot 6s ease-in-out infinite' }}
@@ -448,7 +448,7 @@ export default function CinematicHero() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-sm transition-all duration-300" onClick={closeModal}>
 
           <div 
-            className={`relative w-full ${activeModal === 'Pricing' ? 'max-w-6xl' : activeModal === 'Features' ? 'max-w-5xl' : 'max-w-lg'} bg-white/90 backdrop-blur-xl border border-white rounded-[32px] p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] animate-in fade-in zoom-in-95 duration-300 transition-all`}
+            className={`relative w-full ${activeModal === 'Pricing' ? 'max-w-6xl' : activeModal === 'Features' ? 'max-w-5xl' : 'max-w-lg'} bg-white/90 backdrop-blur-xl border border-white rounded-[32px] p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] animate-in fade-in zoom-in-95 duration-300 transition-all overflow-y-auto max-h-[90vh]`}
             onClick={(e) => e.stopPropagation()}
           >
             <button 
