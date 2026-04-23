@@ -350,19 +350,33 @@ export default function CinematicHero() {
 
   return (
     <main className="relative min-h-screen w-full flex flex-col justify-between bg-white text-zinc-900 selection:bg-blue-500/20 selection:text-blue-900 font-sans" style={{ overflowX: 'hidden' }}>
-      {/* Dual Gradient Overlay Background */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(229,231,235,0.8) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(229,231,235,0.8) 1px, transparent 1px),
-            radial-gradient(circle 500px at 20% 80%, rgba(139,92,246,0.3), transparent),
-            radial-gradient(circle 500px at 80% 20%, rgba(59,130,246,0.3), transparent)
-          `,
-          backgroundSize: "48px 48px, 48px 48px, 100% 100%, 100% 100%",
-        }}
-      />
+      {/* Background Image with Blur */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Placeholder gradient background (replace with actual image) */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-orange-100 via-purple-50 to-blue-100"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(80px) brightness(1.1)',
+            transform: 'scale(1.1)',
+          }}
+        />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
+        {/* Subtle grid overlay */}
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(229,231,235,0.4) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(229,231,235,0.4) 1px, transparent 1px)
+            `,
+            backgroundSize: '48px 48px',
+          }}
+        />
+      </div>
 
       {/* Navigation */}
       <header className="relative z-40 w-full pt-8 px-6 flex justify-center">

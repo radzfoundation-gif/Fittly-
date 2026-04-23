@@ -47,19 +47,30 @@ export default function WaitlistPage() {
   return (
     <main className="relative min-h-screen w-full flex flex-col items-center justify-center bg-white text-zinc-900 font-sans px-4 py-16" style={{ overflowX: 'hidden' }}>
 
-      {/* Background */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(229,231,235,0.6) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(229,231,235,0.6) 1px, transparent 1px),
-            radial-gradient(circle 600px at 10% 90%, rgba(139,92,246,0.2), transparent),
-            radial-gradient(circle 600px at 90% 10%, rgba(59,130,246,0.2), transparent)
-          `,
-          backgroundSize: '48px 48px, 48px 48px, 100% 100%, 100% 100%',
-        }}
-      />
+      {/* Background Image with Blur */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-orange-100 via-purple-50 to-blue-100"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(80px) brightness(1.1)',
+            transform: 'scale(1.1)',
+          }}
+        />
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(229,231,235,0.4) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(229,231,235,0.4) 1px, transparent 1px)
+            `,
+            backgroundSize: '48px 48px',
+          }}
+        />
+      </div>
 
       {/* Back to home */}
       <Link
