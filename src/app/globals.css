@@ -24,3 +24,64 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Prompt Border Trace Animation ─────────────────────────── */
+@keyframes borderTrace {
+  0% { background-position: 0% 0%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.prompt-loading-border {
+  position: relative;
+}
+
+.prompt-loading-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 1.625rem;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    #3b82f6 0%,
+    #8b5cf6 25%,
+    #ec4899 50%,
+    #3b82f6 75%,
+    #8b5cf6 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotateBorder 2s linear infinite;
+  pointer-events: none;
+  z-index: 40;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorder {
+  to { --angle: 360deg; }
+}
+
+/* ── 5x5 Grid Loader for Model Preview ────────────────────── */
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+@keyframes gridRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.grid-loader-cell {
+  animation: gridPulse 1.5s ease-in-out infinite;
+}
+

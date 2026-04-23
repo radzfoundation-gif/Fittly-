@@ -54,6 +54,14 @@ export default function FittlyWorkspace() {
   const [showGarmentModal, setShowGarmentModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'try-on' | 'collection' | 'garments' | 'settings'>('try-on');
+  const [garmentCategory, setGarmentCategory] = useState('all');
+
+  // AI Generation states
+  const [promptText, setPromptText] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiResult, setAiResult] = useState<string | null>(null);
+  const [generationProgress, setGenerationProgress] = useState(0);
 
   // Photo / camera states
   const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
@@ -71,6 +79,59 @@ export default function FittlyWorkspace() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   }, []);
+
+  // ── AI Generate Try-On ──────────────────────────────────────────
+  const handleGenerate = useCallback(async () => {
+    if (!promptText.trim()) {
+      showToast('Please describe the outfit you want to try on.');
+      return;
+    }
+    setIsGenerating(true);
+    setAiResult(null);
+    setGenerationProgress(0);
+
+    // Simulate progress animation
+    const progressInterval = setInterval(() => {
+      setGenerationProgress((prev) => {
+        if (prev >= 90) { clearInterval(progressInterval); return 90; }
+        return prev + Math.random() * 15;
+      });
+    }, 500);
+
+    try {
+      const res = await fetch('/api/tryon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: promptText,
+          modelType: selectedModelType,
+          gender: mannequinGender,
+        }),
+      });
+
+      const data = await res.json();
+      clearInterval(progressInterval);
+      setGenerationProgress(100);
+
+      if (!res.ok || data.error) {
+        showToast(data.error || 'Generation failed. Try again.');
+        setIsGenerating(false);
+        setGenerationProgress(0);
+        return;
+      }
+
+      setTimeout(() => {
+        setAiResult(data.analysis);
+        setIsGenerating(false);
+        showToast('✨ Try-on analysis generated!');
+      }, 600);
+    } catch (err) {
+      clearInterval(progressInterval);
+      showToast('Network error. Please check your connection.');
+      setIsGenerating(false);
+      setGenerationProgress(0);
+    }
+  }, [promptText, selectedModelType, mannequinGender, showToast]);
 
   // ── Camera helpers ──────────────────────────────────────────────
   const startCamera = useCallback(async () => {
@@ -229,7 +290,7 @@ export default function FittlyWorkspace() {
         <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px]"></div>
       </div>
 
-      <div className="relative z-10 w-full min-h-screen flex">
+      <div className="relative z-10 w-full min-h-screen flex overflow-hidden">
         {/* Floating Toggle Button */}
         <button
           onClick={() => setIsSidebarOpen(true)}
@@ -239,8 +300,8 @@ export default function FittlyWorkspace() {
         </button>
 
         {/* Sidebar */}
-        <div className={`hidden md:block sticky top-0 h-screen transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden ${isSidebarOpen ? 'w-[312px] opacity-100' : 'w-0 opacity-0'}`}>
-          <aside className="m-4 flex flex-col h-[calc(100vh-32px)] bg-white/80 backdrop-blur-3xl border border-white shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[2.5rem] py-8 px-4 justify-between w-[280px]">
+        <div className={`hidden md:flex shrink-0 sticky top-0 h-screen transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden ${isSidebarOpen ? 'w-[300px]' : 'w-0'}`}>
+          <aside className={`m-3 flex flex-col h-[calc(100vh-24px)] bg-white/90 backdrop-blur-3xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[2.5rem] py-8 px-4 justify-between w-[274px] shrink-0 transition-all duration-500 ${isSidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
             <div>
               <div className="font-['Schibsted_Grotesk'] font-bold text-xl tracking-tighter select-none mb-12 flex items-center justify-between px-2 text-black">
                 <div className="flex items-center gap-3 overflow-hidden">
@@ -254,23 +315,51 @@ export default function FittlyWorkspace() {
                 </button>
               </div>
               <nav className="flex flex-col gap-3 font-['Schibsted_Grotesk'] font-medium text-sm text-zinc-500 relative">
-                <Link href="#" className="flex items-center px-4 py-3.5 bg-blue-600 text-white rounded-2xl transition-all shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:shadow-[0_6px_25px_rgba(37,99,235,0.5)] hover:-translate-y-0.5 group">
-                  <Icon icon="solar:magic-stick-3-bold-duotone" className="text-2xl shrink-0" />
+                <button 
+                  onClick={() => setActiveTab('try-on')}
+                  className={`flex items-center px-4 py-3.5 rounded-2xl transition-all group ${
+                    activeTab === 'try-on' 
+                      ? 'bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.4)]' 
+                      : 'hover:bg-zinc-100 hover:text-zinc-900'
+                  }`}
+                >
+                  <Icon icon="solar:magic-stick-3-bold-duotone" className={`text-2xl shrink-0 ${activeTab === 'try-on' ? 'text-white' : 'text-zinc-400 group-hover:text-blue-500'}`} />
                   <span className="ml-3 whitespace-nowrap font-semibold">New Try-On</span>
-                </Link>
-                <Link href="#" className="flex items-center px-4 py-3.5 hover:bg-zinc-100 hover:text-zinc-900 rounded-2xl transition-all group">
-                  <Icon icon="solar:gallery-bold-duotone" className="text-2xl shrink-0 text-zinc-400 group-hover:text-blue-500 transition-colors" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('collection')}
+                  className={`flex items-center px-4 py-3.5 rounded-2xl transition-all group ${
+                    activeTab === 'collection' 
+                      ? 'bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.4)]' 
+                      : 'hover:bg-zinc-100 hover:text-zinc-900'
+                  }`}
+                >
+                  <Icon icon="solar:gallery-bold-duotone" className={`text-2xl shrink-0 ${activeTab === 'collection' ? 'text-white' : 'text-zinc-400 group-hover:text-blue-500'}`} />
                   <span className="ml-3 whitespace-nowrap">My Collection</span>
-                </Link>
-                <Link href="#" className="flex items-center px-4 py-3.5 hover:bg-zinc-100 hover:text-zinc-900 rounded-2xl transition-all group">
-                  <Icon icon="solar:hanger-2-bold-duotone" className="text-2xl shrink-0 text-zinc-400 group-hover:text-blue-500 transition-colors" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('garments')}
+                  className={`flex items-center px-4 py-3.5 rounded-2xl transition-all group ${
+                    activeTab === 'garments' 
+                      ? 'bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.4)]' 
+                      : 'hover:bg-zinc-100 hover:text-zinc-900'
+                  }`}
+                >
+                  <Icon icon="solar:hanger-2-bold-duotone" className={`text-2xl shrink-0 ${activeTab === 'garments' ? 'text-white' : 'text-zinc-400 group-hover:text-blue-500'}`} />
                   <span className="ml-3 whitespace-nowrap">Garments</span>
-                </Link>
+                </button>
                 <div className="w-full h-px bg-zinc-200/60 my-2"></div>
-                <Link href="#" className="flex items-center px-4 py-3.5 hover:bg-zinc-100 hover:text-zinc-900 rounded-2xl transition-all group">
-                  <Icon icon="solar:settings-bold-duotone" className="text-2xl shrink-0 text-zinc-400 group-hover:text-blue-500 transition-colors" />
+                <button 
+                  onClick={() => setActiveTab('settings')}
+                  className={`flex items-center px-4 py-3.5 rounded-2xl transition-all group ${
+                    activeTab === 'settings' 
+                      ? 'bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.4)]' 
+                      : 'hover:bg-zinc-100 hover:text-zinc-900'
+                  }`}
+                >
+                  <Icon icon="solar:settings-bold-duotone" className={`text-2xl shrink-0 ${activeTab === 'settings' ? 'text-white' : 'text-zinc-400 group-hover:text-blue-500'}`} />
                   <span className="ml-3 whitespace-nowrap">Settings</span>
-                </Link>
+                </button>
               </nav>
             </div>
             <div className="flex flex-col gap-4 font-['Schibsted_Grotesk']">
@@ -292,10 +381,13 @@ export default function FittlyWorkspace() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 h-screen overflow-y-auto flex flex-col items-center px-4 py-16 z-20 relative">
+        <section className="flex-1 min-w-0 h-screen overflow-x-hidden overflow-y-auto flex flex-col px-6 md:px-10 py-16 z-20 relative transition-all duration-500">
 
-          {/* ── STEP 1: Select Mode ── */}
-          {workspaceStep === 'select-mode' && (
+          {/* ── VIEW: Try On ── */}
+          {activeTab === 'try-on' && (
+            <div className="w-full h-full flex flex-col items-center animate-in fade-in duration-500">
+              {/* Existing Try-On Steps */}
+              {workspaceStep === 'select-mode' && (
             <div className="flex flex-col items-center justify-center w-full max-w-4xl h-full min-h-[70vh]">
               <div className="flex items-center gap-2 p-1 pr-4 bg-white/80 border border-white rounded-full shadow-sm mb-6 backdrop-blur-md">
                 <div className="bg-blue-600 text-white px-2.5 py-0.5 rounded-full flex items-center gap-1.5 font-['Inter'] font-medium text-xs shadow-inner">
@@ -514,7 +606,13 @@ export default function FittlyWorkspace() {
                 </p>
 
                 {/* Prompt Input */}
-                <div className="w-full max-w-3xl h-[180px] lg:h-[200px] bg-zinc-900/40 backdrop-blur-2xl rounded-[1.5rem] p-3 flex flex-col justify-between shadow-[0_16px_40px_rgba(0,0,0,0.2)] border border-white/10 relative z-20">
+                <div className={`w-full max-w-3xl h-[180px] lg:h-[200px] bg-zinc-900/40 backdrop-blur-2xl rounded-[1.5rem] p-3 flex flex-col justify-between shadow-[0_16px_40px_rgba(0,0,0,0.2)] border border-white/10 relative z-20 ${isGenerating ? 'prompt-loading-border' : ''}`}>
+                  {/* Progress bar when generating */}
+                  {isGenerating && (
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-white/10 rounded-t-[1.5rem] overflow-hidden z-30">
+                      <div className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-full transition-all duration-500 ease-out animate-pulse" style={{ width: `${generationProgress}%` }}></div>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center px-3 pt-2 pb-2 font-['Schibsted_Grotesk'] font-medium text-xs text-white/90">
                     <div className="flex items-center gap-3">
                       <span>25/100 AI Sessions</span>
@@ -524,14 +622,31 @@ export default function FittlyWorkspace() {
                     </div>
                     <div className="flex items-center gap-1.5 opacity-80">
                       <Icon icon="solar:stars-minimalistic-linear" width="18" height="18" />
-                      Powered by Fittly AI
+                      {isGenerating ? 'Generating...' : 'Powered by Fittly AI'}
                     </div>
                   </div>
                   <div className="bg-white flex-1 rounded-[1.25rem] shadow-inner p-3 lg:p-4 flex flex-col justify-between relative overflow-hidden group">
                     <div className="flex items-start justify-between gap-4 h-full">
-                      <textarea className="w-full h-full resize-none outline-none font-['Schibsted_Grotesk'] font-normal text-sm lg:text-base placeholder-zinc-400 text-zinc-800 bg-transparent" placeholder="e.g. 'Put this leather jacket over a white t-shirt and blue jeans...'"></textarea>
-                      <button className="w-10 h-10 lg:w-12 lg:h-12 shrink-0 bg-blue-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 self-end md:self-start group-focus-within:bg-blue-700 group-focus-within:shadow-lg group-focus-within:shadow-blue-600/30">
-                        <Icon icon="solar:arrow-up-linear" className="text-xl lg:text-2xl" strokeWidth="2" />
+                      <textarea
+                        value={promptText}
+                        onChange={(e) => setPromptText(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleGenerate(); } }}
+                        disabled={isGenerating}
+                        className="w-full h-full resize-none outline-none font-['Schibsted_Grotesk'] font-normal text-sm lg:text-base placeholder-zinc-400 text-zinc-800 bg-transparent disabled:opacity-50"
+                        placeholder="e.g. 'Put this leather jacket over a white t-shirt and blue jeans...'"
+                      />
+                      <button
+                        onClick={handleGenerate}
+                        disabled={isGenerating || !promptText.trim()}
+                        className={`w-10 h-10 lg:w-12 lg:h-12 shrink-0 rounded-xl lg:rounded-2xl flex items-center justify-center text-white transition-all duration-300 self-end md:self-start ${
+                          isGenerating
+                            ? 'bg-purple-600 animate-pulse cursor-wait'
+                            : promptText.trim()
+                              ? 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30'
+                              : 'bg-zinc-300 cursor-not-allowed'
+                        }`}
+                      >
+                        <Icon icon={isGenerating ? 'solar:loading-bold-duotone' : 'solar:arrow-up-linear'} className={`text-xl lg:text-2xl ${isGenerating ? 'animate-spin' : ''}`} />
                       </button>
                     </div>
                     <div className="flex justify-between items-end w-full pt-2 lg:pt-3">
@@ -548,15 +663,73 @@ export default function FittlyWorkspace() {
                           Styles
                         </button>
                       </div>
-                      <div className="text-xs text-zinc-400 font-['Schibsted_Grotesk'] font-medium pb-1 pr-1">0/3,000</div>
+                      <div className="text-xs text-zinc-400 font-['Schibsted_Grotesk'] font-medium pb-1 pr-1">{promptText.length}/3,000</div>
                     </div>
                   </div>
                 </div>
+
+                {/* AI Result Panel */}
+                {aiResult && (
+                  <div className="w-full max-w-3xl mt-6 bg-white/90 backdrop-blur-xl rounded-[1.5rem] p-6 border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08)] animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-20">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                          <Icon icon="solar:stars-minimalistic-bold" className="text-white text-sm" />
+                        </div>
+                        <span className="text-sm font-black text-zinc-900 font-['Schibsted_Grotesk']">Fittly AI Analysis</span>
+                      </div>
+                      <button onClick={() => setAiResult(null)} className="p-1.5 hover:bg-zinc-100 rounded-lg transition-all text-zinc-400 hover:text-zinc-700">
+                        <Icon icon="solar:close-circle-bold-duotone" className="text-xl" />
+                      </button>
+                    </div>
+                    <div className="prose prose-sm max-w-none text-zinc-700 font-['Schibsted_Grotesk'] leading-relaxed whitespace-pre-wrap">
+                      {aiResult}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Right: Model Preview */}
               <div className="w-full lg:w-[380px] xl:w-[420px] shrink-0 flex flex-col relative z-10 h-full max-h-[800px]">
-                <div className="h-full bg-white/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/60 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col overflow-hidden group">
+                <div className="h-full bg-white/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/60 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col overflow-hidden group relative">
+                  {/* Grid Loader Overlay (above blur) */}
+                  {isGenerating && (
+                    <div className="absolute inset-3 z-40 rounded-[2rem] flex items-center justify-center pointer-events-none overflow-hidden">
+                      {/* Rotating micro-grid */}
+                      <div className="absolute inset-0" style={{ animation: 'gridRotate 12s linear infinite' }}>
+                        <div className="w-full h-full grid grid-cols-10 grid-rows-10 gap-[2px] p-1">
+                          {Array.from({ length: 100 }).map((_, i) => {
+                            const row = Math.floor(i / 10);
+                            const col = i % 10;
+                            const distFromCenter = Math.sqrt((row - 4.5) ** 2 + (col - 4.5) ** 2);
+                            const delay = distFromCenter * 0.08;
+                            return (
+                              <div
+                                key={i}
+                                className="grid-loader-cell rounded-sm"
+                                style={{
+                                  animationDelay: `${delay}s`,
+                                  background: distFromCenter < 3
+                                    ? 'rgba(59,130,246,0.25)'
+                                    : 'rgba(59,130,246,0.1)',
+                                  border: '0.5px solid rgba(255,255,255,0.15)',
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                      {/* Center label */}
+                      <div className="relative z-10 flex flex-col items-center justify-center">
+                        <div className="w-14 h-14 rounded-2xl bg-white/90 backdrop-blur-xl flex items-center justify-center shadow-xl border border-white/60 mb-3">
+                          <Icon icon="solar:magic-stick-3-bold-duotone" className="text-2xl text-blue-600 animate-pulse" />
+                        </div>
+                        <span className="text-[10px] font-black text-zinc-800 uppercase tracking-[0.2em] bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg border border-white/50">
+                          Processing...
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-3 mb-3 bg-white/50 rounded-3xl shrink-0">
                     <div className="flex items-center gap-3">
@@ -570,14 +743,14 @@ export default function FittlyWorkspace() {
                         </p>
                       </div>
                     </div>
-                    <div className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1 shrink-0">
-                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                      Ready
+                    <div className={`px-3 py-1 ${isGenerating ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'} text-[10px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1 shrink-0`}>
+                      <div className={`w-1.5 h-1.5 ${isGenerating ? 'bg-blue-500' : 'bg-emerald-500'} rounded-full animate-pulse`}></div>
+                      {isGenerating ? 'Generating' : 'Ready'}
                     </div>
                   </div>
 
                   {/* Preview Frame */}
-                  <div className="relative flex-1 w-full bg-zinc-100 rounded-[2rem] overflow-hidden border border-black/5 shadow-inner min-h-0">
+                  <div className={`relative flex-1 w-full bg-zinc-100 rounded-[2rem] overflow-hidden border border-black/5 shadow-inner min-h-0 transition-all duration-700 ${isGenerating ? 'blur-[6px] scale-[1.02] brightness-110' : ''}`}>
                     {/* Gender Toggle for Mannequin */}
                     {selectedModelType === 'mannequin' && !hasSelectedGender && (
                       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex bg-white/60 backdrop-blur-xl p-1 rounded-[14px] border border-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all animate-in slide-in-from-top-4">
@@ -602,9 +775,13 @@ export default function FittlyWorkspace() {
                       mannequinGender === 'male' ? (
                         <div className="w-full h-full bg-[#f5efe6] flex items-center justify-center relative group animate-in fade-in zoom-in-95 duration-700">
                           <Suspense fallback={
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[#a89f91]">
-                              <Icon icon="solar:cpu-bolt-bold-duotone" className="text-3xl animate-bounce text-[#d4c5b0]" />
-                              <span className="font-bold text-xs uppercase tracking-widest animate-pulse">Loading 3D Model...</span>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#f5efe6]">
+                              <div className="relative w-20 h-20 rounded-2xl overflow-hidden shadow-sm border border-white/50">
+                                <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                                  <source src="/loading-boy.mp4" type="video/mp4" />
+                                </video>
+                              </div>
+                              <span className="font-bold text-[10px] uppercase tracking-[0.2em] text-[#a89f91] animate-pulse">Initializing 3D Space...</span>
                             </div>
                           }>
                             <Canvas
@@ -693,7 +870,9 @@ export default function FittlyWorkspace() {
               </div>
             </div>
           )}
-        </main>
+          </div>
+        )}
+        </section>
 
         {/* Garment Upload Modal */}
         {showGarmentModal && (
@@ -785,6 +964,239 @@ export default function FittlyWorkspace() {
           <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[300] bg-zinc-900 text-white px-6 py-3 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-white/10 flex items-center gap-3 animate-in slide-in-from-bottom-10 fade-in duration-300">
             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
             <span className="font-semibold text-sm tracking-wide">{toastMessage}</span>
+          </div>
+        )}
+
+        {/* ── VIEW: My Collection ── */}
+        {activeTab === 'collection' && (
+          <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl font-black tracking-tighter text-zinc-900">My Collection</h2>
+                  <p className="text-zinc-500 font-medium">Your generated try-on results and saved looks.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm font-bold text-zinc-700 hover:bg-zinc-50 transition-all shadow-sm">
+                    <Icon icon="solar:sort-from-bottom-to-top-linear" className="text-lg" />
+                    Sort by Date
+                  </button>
+                  <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20">
+                    <Icon icon="solar:cloud-download-linear" className="text-lg" />
+                    Export All
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {[
+                  'photo-1515886657613-9f3515b0c78f',
+                  'photo-1529139574466-a303027c1d8b',
+                  'photo-1509631179647-0177331693ae',
+                  'photo-1496747611176-843222e1e57c',
+                  'photo-1534528741775-53994a69daeb',
+                  'photo-1469334031218-e382a71b716b',
+                  'photo-1544005313-94ddf0286df2',
+                  'photo-1492707892479-7bc8d5a4ee93'
+                ].map((photoId, i) => (
+                  <div key={i} className="group relative bg-white border border-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div className="aspect-[3/4] overflow-hidden">
+                      <img 
+                        src={`https://images.unsplash.com/${photoId}?q=80&w=800&auto=format&fit=crop`} 
+                        alt={`Try on look ${i + 1}`} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+                      <div className="flex gap-2">
+                        <button className="flex-1 py-2 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-lg hover:bg-white/40 transition-all border border-white/30">Preview</button>
+                        <button className="w-10 h-10 bg-white text-zinc-900 rounded-lg flex items-center justify-center hover:scale-110 transition-all shadow-lg">
+                          <Icon icon="solar:download-linear" className="text-xl" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-white backdrop-blur-md">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Generated</span>
+                        <span className="text-[10px] text-zinc-400 font-medium">2h ago</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-zinc-800 mt-1 truncate">Summer Vibe Look #{i}</h4>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── VIEW: Garments ── */}
+        {activeTab === 'garments' && (
+          <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+            <div className="flex flex-col gap-8">
+              {/* Header */}
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl font-black tracking-tighter text-zinc-900">Garment Library</h2>
+                  <p className="text-zinc-500 font-medium">Browse and manage your garment catalog by category.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Icon icon="solar:magnifer-linear" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg text-zinc-400" />
+                    <input type="text" placeholder="Search garments..." className="pl-10 pr-4 py-2.5 bg-white/90 border border-zinc-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all w-52 text-zinc-800 placeholder-zinc-400" />
+                  </div>
+                  <button onClick={() => setShowGarmentModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                    <Icon icon="solar:add-circle-linear" className="text-lg" />
+                    Add Garment
+                  </button>
+                </div>
+              </div>
+
+              {/* Category Tabs */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {[
+                  { id: 'all', label: 'All', icon: 'solar:widget-4-bold-duotone' },
+                  { id: 'summer', label: 'Summer', icon: 'solar:sun-bold-duotone' },
+                  { id: 'casual', label: 'Casual', icon: 'solar:t-shirt-bold-duotone' },
+                  { id: 'formal', label: 'Formal', icon: 'solar:case-bold-duotone' },
+                  { id: 'streetwear', label: 'Streetwear', icon: 'solar:skateboarding-bold-duotone' },
+                  { id: 'activewear', label: 'Activewear', icon: 'solar:running-bold-duotone' },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${
+                      (garmentCategory || 'all') === cat.id
+                        ? 'bg-zinc-900 text-white shadow-md'
+                        : 'bg-white/80 text-zinc-600 hover:bg-white hover:text-zinc-900 border border-zinc-200/60'
+                    }`}
+                    onClick={() => setGarmentCategory(cat.id)}
+                  >
+                    <Icon icon={cat.icon} className="text-lg" />
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Garment Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                {[
+                  { name: 'Floral Maxi Dress', cat: 'summer', price: '$89', brand: 'Zara', img: 'photo-1572804013309-59a88b7e92f1' },
+                  { name: 'Linen Beach Shirt', cat: 'summer', price: '$45', brand: 'H&M', img: 'photo-1596755094514-f87e34085b2c' },
+                  { name: 'Straw Sun Hat', cat: 'summer', price: '$32', brand: 'Mango', img: 'photo-1521369909029-2afed882baee' },
+                  { name: 'Cotton Shorts', cat: 'summer', price: '$38', brand: 'Uniqlo', img: 'photo-1591195853828-11db59a44f6b' },
+                  { name: 'Oversized Hoodie', cat: 'casual', price: '$65', brand: 'Nike', img: 'photo-1556821840-3a63f95609a7' },
+                  { name: 'Classic Denim Jacket', cat: 'casual', price: '$120', brand: 'Levi\'s', img: 'photo-1551028719-00167b16eac5' },
+                  { name: 'Graphic Tee', cat: 'casual', price: '$29', brand: 'Uniqlo', img: 'photo-1576566588028-4147f3842f27' },
+                  { name: 'Slim Fit Chinos', cat: 'casual', price: '$55', brand: 'H&M', img: 'photo-1473966968600-fa801b869a1a' },
+                  { name: 'Tailored Blazer', cat: 'formal', price: '$220', brand: 'Hugo Boss', img: 'photo-1507680434567-5739c80be1ac' },
+                  { name: 'Silk Blouse', cat: 'formal', price: '$150', brand: 'Massimo Dutti', img: 'photo-1594938298603-c8148c4dae35' },
+                  { name: 'Pencil Skirt', cat: 'formal', price: '$95', brand: 'COS', img: 'photo-1583496661160-fb5886a0aaaa' },
+                  { name: 'Cargo Pants', cat: 'streetwear', price: '$85', brand: 'Stussy', img: 'photo-1548883354-7622d03aca27' },
+                  { name: 'Puffer Vest', cat: 'streetwear', price: '$110', brand: 'TNF', img: 'photo-1544022613-e87ca75a784a' },
+                  { name: 'Bucket Hat', cat: 'streetwear', price: '$35', brand: 'Carhartt', img: 'photo-1588850561407-ed78c334e67a' },
+                  { name: 'Running Tights', cat: 'activewear', price: '$70', brand: 'Nike', img: 'photo-1506629082955-511b1aa562c8' },
+                  { name: 'Sports Bra', cat: 'activewear', price: '$45', brand: 'Adidas', img: 'photo-1571019613454-1cb2f99b2d8b' },
+                ].filter(g => (garmentCategory || 'all') === 'all' || g.cat === (garmentCategory || 'all')).map((garment, i) => (
+                  <div key={i} className="group relative bg-white/95 backdrop-blur-xl border border-zinc-100 rounded-[1.75rem] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                    <div className="aspect-square overflow-hidden bg-zinc-100 relative">
+                      <img
+                        src={`https://images.unsplash.com/${garment.img}?q=80&w=600&auto=format&fit=crop`}
+                        alt={garment.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <button className="w-full py-2.5 bg-white/90 backdrop-blur-md text-zinc-900 text-xs font-bold rounded-xl hover:bg-white transition-all shadow-lg">
+                          <Icon icon="solar:magic-stick-3-bold-duotone" className="text-base inline mr-1.5 -mt-0.5" />
+                          Try On
+                        </button>
+                      </div>
+                      {/* Category badge */}
+                      <div className="absolute top-3 left-3 px-2.5 py-1 bg-white/80 backdrop-blur-md rounded-lg text-[9px] font-black uppercase tracking-widest text-zinc-700 border border-white/50 shadow-sm">
+                        {garment.cat}
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">{garment.brand}</span>
+                        <span className="text-sm font-black text-zinc-900">{garment.price}</span>
+                      </div>
+                      <h4 className="text-sm font-bold text-zinc-800 truncate">{garment.name}</h4>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Stats bar */}
+              <div className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md border border-zinc-100 rounded-2xl">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-xs font-bold text-zinc-600">16 Total Garments</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <span className="text-xs font-bold text-zinc-600">6 Categories</span>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Fittly Garment Engine v2.0</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── VIEW: Settings ── */}
+        {activeTab === 'settings' && (
+          <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+            <div className="flex flex-col gap-8">
+              <div>
+                <h2 className="text-3xl font-black tracking-tighter text-zinc-900">Settings</h2>
+                <p className="text-zinc-500 font-medium">Manage your profile and studio preferences.</p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="bg-white/95 backdrop-blur-xl border border-zinc-100 rounded-[2.5rem] p-8 shadow-md">
+                  <h3 className="text-lg font-bold text-zinc-900 mb-6 flex items-center gap-2">
+                    <Icon icon="solar:user-circle-bold-duotone" className="text-blue-600 text-2xl" />
+                    Profile Information
+                  </h3>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Full Name</label>
+                      <input type="text" defaultValue="Jane Fashion" className="w-full bg-white border border-zinc-200 rounded-2xl px-4 py-3 text-sm font-bold text-zinc-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Email Address</label>
+                      <input type="email" defaultValue="jane@fashion.com" className="w-full bg-white border border-zinc-200 rounded-2xl px-4 py-3 text-sm font-bold text-zinc-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/95 backdrop-blur-xl border border-zinc-100 rounded-[2.5rem] p-8 shadow-md">
+                  <h3 className="text-lg font-bold text-zinc-900 mb-6 flex items-center gap-2">
+                    <Icon icon="solar:shield-keyhole-bold-duotone" className="text-blue-600 text-2xl" />
+                    Security & Plan
+                  </h3>
+                  <div className="flex items-center justify-between p-4 bg-blue-50/50 border border-blue-100 rounded-2xl">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <Icon icon="solar:crown-bold-duotone" className="text-xl" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-zinc-900">Pro Plan</p>
+                        <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Active until May 2024</p>
+                      </div>
+                    </div>
+                    <button className="px-4 py-2 bg-white text-blue-600 border border-blue-200 text-xs font-bold rounded-lg hover:bg-blue-50 transition-all">Manage Plan</button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <button className="px-8 py-3.5 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                  Save Changes
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

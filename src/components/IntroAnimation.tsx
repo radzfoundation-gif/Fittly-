@@ -6,10 +6,10 @@ export default function IntroAnimation() {
   const [phase, setPhase] = useState<'visible' | 'shrink' | 'gone'>('visible');
 
   useEffect(() => {
-    // After 1.6s start the exit animation
-    const t1 = setTimeout(() => setPhase('shrink'), 1600);
+    // After 3.5s start the exit animation
+    const t1 = setTimeout(() => setPhase('shrink'), 3500);
     // After exit animation completes, remove from DOM
-    const t2 = setTimeout(() => setPhase('gone'), 2500);
+    const t2 = setTimeout(() => setPhase('gone'), 4500);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
@@ -46,49 +46,51 @@ export default function IntroAnimation() {
         }}
       />
 
-      {/* Logo mark */}
-      <div className="relative flex flex-col items-center gap-5">
-        {/* Animated logo box */}
+      {/* Video & Text Content */}
+      <div className="relative flex flex-col items-center gap-8 max-w-md px-6 text-center">
+        {/* Video Container */}
         <div
-          className="relative"
+          className="relative w-64 h-64 md:w-80 md:h-80 rounded-[3rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white bg-zinc-50"
           style={{
-            animation: 'introLogoIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both',
+            animation: 'introLogoIn 0.8s cubic-bezier(0.34,1.56,0.64,1) both',
           }}
         >
-          {/* Outer ring pulse */}
-          <div
-            className="absolute inset-0 rounded-[22px] bg-blue-500/20"
-            style={{ animation: 'introPulse 1.2s ease-out 0.3s both' }}
-          />
-          <div className="w-20 h-20 bg-blue-600 rounded-[22px] flex items-center justify-center shadow-[0_8px_32px_rgba(37,99,235,0.4)]">
-            <span className="text-white text-4xl font-black tracking-tighter select-none">F</span>
-          </div>
-        </div>
-
-        {/* Wordmark */}
-        <div
-          style={{ animation: 'introWordIn 0.5s ease 0.35s both' }}
-          className="flex flex-col items-center gap-1"
-        >
-          <span className="text-2xl font-bold tracking-tighter text-zinc-900 select-none">
-            Fittly
-          </span>
-          <span
-            className="text-xs font-medium text-zinc-400 tracking-widest uppercase"
-            style={{ animation: 'introWordIn 0.5s ease 0.55s both' }}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
           >
-            Virtual Try-On
-          </span>
+            <source src="/loading-boy.mp4" type="video/mp4" />
+          </video>
         </div>
 
-        {/* Loading bar */}
+        {/* Text Area */}
+        <div className="space-y-3">
+          <h2 
+            className="text-3xl md:text-4xl font-bold tracking-tighter text-zinc-900"
+            style={{ animation: 'introWordIn 0.6s ease 0.4s both' }}
+          >
+            Fittly Studio
+          </h2>
+          <p 
+            className="text-zinc-500 font-medium text-sm md:text-base leading-relaxed"
+            style={{ animation: 'introWordIn 0.6s ease 0.6s both' }}
+          >
+            Menyiapkan ruang kreatif virtual Anda.<br />
+            Hampir sampai di tujuan.
+          </p>
+        </div>
+
+        {/* Progress Bar */}
         <div
-          className="w-32 h-0.5 bg-zinc-100 rounded-full overflow-hidden mt-2"
-          style={{ animation: 'introWordIn 0.4s ease 0.6s both' }}
+          className="w-48 h-1 bg-zinc-100 rounded-full overflow-hidden mt-2"
+          style={{ animation: 'introWordIn 0.4s ease 0.8s both' }}
         >
           <div
-            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
-            style={{ animation: 'introBar 1.1s cubic-bezier(0.4,0,0.2,1) 0.65s both' }}
+            className="h-full bg-blue-600 rounded-full"
+            style={{ animation: 'introBar 1.5s cubic-bezier(0.4,0,0.2,1) 0.8s both' }}
           />
         </div>
       </div>

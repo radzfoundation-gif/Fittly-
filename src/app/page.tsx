@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import SeamlessVideo from '@/components/SeamlessVideo';
 
 // Scroll reveal wrapper
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
@@ -296,32 +297,126 @@ export default function CinematicHero() {
         return (
           <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
             <div>
-              <label className="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wider">Email Address</label>
-              <input type="email" className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder-zinc-400 shadow-sm" placeholder="you@company.com" />
+              <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Email Address</label>
+              <input type="email" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm" placeholder="you@company.com" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider">Password</label>
-                <a href="#" className="text-xs text-blue-600 hover:text-blue-800 transition-colors font-medium">Forgot?</a>
+                <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">Password</label>
+                <button type="button" onClick={() => setActiveModal('Forgot Password')} className="text-xs text-blue-600 hover:text-blue-800 transition-colors font-bold">Forgot Password?</button>
               </div>
-              <input type="password" className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder-zinc-400 shadow-sm" placeholder="••••••••" />
+              <input type="password" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm" placeholder="••••••••" />
             </div>
-            <button className="w-full py-3.5 bg-zinc-900 text-white text-sm font-semibold rounded-xl hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md mt-4">
+            <button className="w-full py-3.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 mt-4 flex items-center justify-center gap-2 active:scale-95">
               Log In
             </button>
+
+            <div className="relative py-2 flex items-center gap-3">
+              <div className="h-px bg-zinc-200/50 flex-1" />
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">or</span>
+              <div className="h-px bg-zinc-200/50 flex-1" />
+            </div>
+
+            <button type="button" className="w-full py-3 bg-white/50 backdrop-blur-md border border-white/60 rounded-xl flex items-center justify-center gap-2 hover:bg-white/80 transition-all shadow-sm active:scale-95">
+              <Icon icon="logos:google-icon" width="18" />
+              <span className="text-sm font-bold text-zinc-700">Sign in with Google</span>
+            </button>
+            <p className="text-center text-zinc-600 text-xs font-medium pt-2">
+              Don't have an account?{' '}
+              <button type="button" onClick={() => setActiveModal('Register')} className="text-blue-600 hover:text-blue-700 font-bold decoration-2 underline-offset-4 hover:underline">
+                Create one
+              </button>
+            </p>
           </form>
+        );
+      case 'Register':
+        return (
+          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Full Name</label>
+                <input type="text" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm" placeholder="John Doe" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Brand Name</label>
+                <input type="text" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm" placeholder="Fashion Brand" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Email Address</label>
+              <input type="email" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm" placeholder="john@brand.com" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Password</label>
+              <input type="password" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm" placeholder="••••••••" />
+            </div>
+            <button className="w-full py-3.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 mt-4 active:scale-95">
+              Get Started
+            </button>
+
+            <div className="relative py-2 flex items-center gap-3">
+              <div className="h-px bg-zinc-200/50 flex-1" />
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">or</span>
+              <div className="h-px bg-zinc-200/50 flex-1" />
+            </div>
+
+            <button type="button" className="w-full py-3 bg-white/50 backdrop-blur-md border border-white/60 rounded-xl flex items-center justify-center gap-2 hover:bg-white/80 transition-all shadow-sm active:scale-95">
+              <Icon icon="logos:google-icon" width="18" />
+              <span className="text-sm font-bold text-zinc-700">Continue with Google</span>
+            </button>
+            <p className="text-center text-zinc-600 text-xs font-medium pt-2">
+              Already have an account?{' '}
+              <button type="button" onClick={() => setActiveModal('Sign In')} className="text-blue-600 hover:text-blue-700 font-bold decoration-2 underline-offset-4 hover:underline">
+                Log In
+              </button>
+            </p>
+          </form>
+        );
+      case 'Forgot Password':
+        return (
+          <div className="space-y-6">
+            <p className="text-zinc-600 text-sm font-medium">Enter your email and we'll send you instructions to reset your password.</p>
+            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); setActiveModal('Reset Sent'); }}>
+              <div>
+                <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Email Address</label>
+                <input type="email" required className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm" placeholder="you@company.com" />
+              </div>
+              <button className="w-full py-3.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                Reset Password
+              </button>
+              <button type="button" onClick={() => setActiveModal('Sign In')} className="w-full text-center text-zinc-600 hover:text-zinc-900 text-xs font-bold transition-colors">
+                Back to Log In
+              </button>
+            </form>
+          </div>
+        );
+      case 'Reset Sent':
+        return (
+          <div className="flex flex-col items-center text-center py-4">
+            <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-inner border border-emerald-100">
+              <Icon icon="solar:check-read-linear" className="text-4xl" />
+            </div>
+            <h2 className="text-xl font-bold text-zinc-900 mb-2">Check your email</h2>
+            <p className="text-zinc-600 text-sm font-medium mb-8">We've sent a password reset link to your email address.</p>
+            <button 
+              onClick={() => setActiveModal('Sign In')}
+              className="w-full py-3.5 bg-white border border-zinc-200 text-zinc-900 text-sm font-bold rounded-xl hover:bg-zinc-50 transition-all shadow-sm active:scale-95"
+            >
+              Back to Log In
+            </button>
+          </div>
         );
       case 'Become a Merchant':
         return (
           <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
             <div>
               <label className="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wider">Brand Name</label>
-              <input type="text" className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder-zinc-400 shadow-sm" placeholder="Your Fashion Brand" />
+              <input type="text" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-400 shadow-sm" placeholder="Your Fashion Brand" />
             </div>
             <div>
               <label className="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wider">E-commerce Platform</label>
               <div className="relative">
-                <select className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all appearance-none shadow-sm">
+                <select className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none shadow-sm">
                   <option value="shopify" className="bg-white">Shopify</option>
                   <option value="woocommerce" className="bg-white">WooCommerce</option>
                   <option value="custom" className="bg-white">Custom API</option>
@@ -331,18 +426,22 @@ export default function CinematicHero() {
             </div>
             <div>
               <label className="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wider">Work Email</label>
-              <input type="email" className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder-zinc-400 shadow-sm" placeholder="founder@brand.com" />
+              <input type="email" className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-400 shadow-sm" placeholder="founder@brand.com" />
             </div>
-            <button className="w-full py-3.5 bg-zinc-900 text-white text-sm font-semibold rounded-xl hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md mt-4">
+            <button className="w-full py-3.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 mt-4 active:scale-95">
               Start Free Trial
             </button>
           </form>
         );
       default:
         return (
-          <div className="bg-zinc-50 rounded-2xl p-10 flex flex-col items-center justify-center border border-zinc-200 text-center">
-            <Icon icon="solar:videocamera-record-linear" width="48" height="48" className="text-zinc-300 mb-4 animate-pulse" />
-            <p className="text-zinc-500 text-sm font-light">Interactive demo loading...</p>
+          <div className="bg-zinc-50 rounded-[2rem] p-12 flex flex-col items-center justify-center border border-zinc-200 text-center">
+            <div className="relative w-32 h-32 rounded-3xl overflow-hidden mb-6 shadow-sm border border-white">
+              <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                <source src="/loading-boy.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <p className="text-zinc-500 text-sm font-medium animate-pulse">Menyiapkan pengalaman interaktif...</p>
           </div>
         );
     }
@@ -350,21 +449,15 @@ export default function CinematicHero() {
 
   return (
     <main className="relative min-h-screen w-full flex flex-col justify-between bg-white text-zinc-900 selection:bg-blue-500/20 selection:text-blue-900 font-sans" style={{ overflowX: 'hidden' }}>
-      {/* Background Image with Blur */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Placeholder gradient background (replace with actual image) */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-orange-100 via-purple-50 to-blue-100"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'blur(80px) brightness(1.1)',
-            transform: 'scale(1.1)',
-          }}
+      {/* Background Video */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-zinc-100 overflow-hidden">
+        <SeamlessVideo 
+          src="/children-camping-bg.mp4" 
+          className="scale-110"
+          style={{ filter: 'blur(80px) brightness(1.1)' }}
         />
         {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-sm" />
         {/* Subtle grid overlay */}
         <div
           className="absolute inset-0 opacity-30"
@@ -482,10 +575,10 @@ export default function CinematicHero() {
 
       {/* Modal */}
       {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-sm transition-all duration-300" onClick={closeModal}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/20 backdrop-blur-md transition-all duration-300" onClick={closeModal}>
 
           <div 
-            className={`relative w-full ${activeModal === 'Pricing' ? 'max-w-6xl' : activeModal === 'Features' ? 'max-w-5xl' : 'max-w-lg'} bg-white/90 backdrop-blur-xl border border-white rounded-[32px] p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] animate-in fade-in zoom-in-95 duration-300 transition-all overflow-y-auto max-h-[90vh]`}
+            className={`relative w-full ${activeModal === 'Pricing' ? 'max-w-6xl' : activeModal === 'Features' ? 'max-w-5xl' : 'max-w-lg'} bg-white/30 backdrop-blur-[40px] border border-white/40 rounded-[40px] p-10 shadow-[0_32px_64px_rgba(0,0,0,0.15)] animate-in fade-in zoom-in-95 duration-500 transition-all overflow-y-auto max-h-[90vh]`}
             onClick={(e) => e.stopPropagation()}
           >
             <button 
@@ -498,10 +591,10 @@ export default function CinematicHero() {
             <div className={`mb-8 pr-8 ${activeModal === 'Pricing' || activeModal === 'Features' ? 'text-center pr-0' : ''}`}>
               <h2 className="text-3xl font-bold tracking-tight text-zinc-900 mb-2">{activeModal}</h2>
               {/* Optional subheadline depending on the modal */}
-              {activeModal === 'Sign In' && <p className="text-zinc-500 text-sm font-medium">Welcome back to Fittly.</p>}
-              {activeModal === 'Become a Merchant' && <p className="text-zinc-500 text-sm font-medium">Join 500+ stores using virtual try-on.</p>}
-              {activeModal === 'Features' && <p className="text-zinc-500 text-sm font-medium">Core technology powering the experience.</p>}
-              {activeModal === 'Pricing' && <p className="text-zinc-500 text-sm font-medium">Choose the perfect plan for your fashion brand.</p>}
+              {activeModal === 'Sign In' && <p className="text-zinc-600 text-sm font-medium">Welcome back to Fittly.</p>}
+              {activeModal === 'Become a Merchant' && <p className="text-zinc-600 text-sm font-medium">Join 500+ stores using virtual try-on.</p>}
+              {activeModal === 'Features' && <p className="text-zinc-600 text-sm font-medium">Core technology powering the experience.</p>}
+              {activeModal === 'Pricing' && <p className="text-zinc-600 text-sm font-medium">Choose the perfect plan for your fashion brand.</p>}
             </div>
 
             {/* Dynamic Modal Content */}

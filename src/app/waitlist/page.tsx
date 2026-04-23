@@ -48,26 +48,26 @@ export default function WaitlistPage() {
     <main className="relative min-h-screen w-full flex flex-col items-center justify-center bg-white text-zinc-900 font-sans px-4 py-16" style={{ overflowX: 'hidden' }}>
 
       {/* Background Image with Blur */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-orange-100 via-purple-50 to-blue-100"
+          className="absolute inset-0 scale-105"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop)',
+            backgroundImage: 'url(/waitlist-bg.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'blur(80px) brightness(1.1)',
-            transform: 'scale(1.1)',
+            filter: 'blur(24px) brightness(1.05) saturate(1.1)',
           }}
         />
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
+        {/* Subtle overlay for contrast */}
+        <div className="absolute inset-0 bg-white/20" />
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-[0.1]"
           style={{
             backgroundImage: `
-              linear-gradient(to right, rgba(229,231,235,0.4) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(229,231,235,0.4) 1px, transparent 1px)
+              linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px)
             `,
-            backgroundSize: '48px 48px',
+            backgroundSize: '32px 32px',
           }}
         />
       </div>
@@ -94,15 +94,15 @@ export default function WaitlistPage() {
 
         {/* ── STEP 1: Choose Role ── */}
         {step === 'role' && (
-          <div className="bg-white/80 backdrop-blur-xl border border-zinc-200/80 rounded-[2rem] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] animate-in fade-in zoom-in-95 duration-300">
+          <div className="bg-white/40 backdrop-blur-[40px] border border-white/50 rounded-[2.5rem] p-10 shadow-[0_32px_64px_rgba(0,0,0,0.1)] animate-in fade-in zoom-in-95 duration-500">
             {/* Header */}
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-600 mb-4">
                 <Icon icon="solar:hourglass-bold-duotone" className="text-base" />
                 Early Access
               </div>
-              <h1 className="text-3xl font-bold tracking-tighter text-zinc-900 mb-2">Join the Waitlist</h1>
-              <p className="text-zinc-500 text-sm leading-relaxed">
+              <h1 className="text-4xl font-bold tracking-tighter text-zinc-900 mb-2">Join the Waitlist</h1>
+              <p className="text-zinc-600 text-sm font-medium leading-relaxed">
                 Be among the first to experience AI-powered virtual try-on. Tell us who you are to get started.
               </p>
             </div>
@@ -125,8 +125,8 @@ export default function WaitlistPage() {
                     <Icon icon={role.icon} className="text-2xl" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-zinc-900 text-sm">{role.label}</div>
-                    <div className="text-zinc-500 text-xs mt-0.5">{role.desc}</div>
+                    <div className="font-bold text-zinc-900 text-sm">{role.label}</div>
+                    <div className="text-zinc-600 text-xs mt-0.5 font-medium">{role.desc}</div>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
                     selectedRole === role.id ? 'border-blue-500 bg-blue-500' : 'border-zinc-300'
@@ -149,15 +149,15 @@ export default function WaitlistPage() {
             </button>
 
             {/* Social proof */}
-            <p className="text-center text-xs text-zinc-400 mt-5">
-              <span className="font-semibold text-zinc-600">1,200+</span> people already on the waitlist
+            <p className="text-center text-xs text-zinc-600 mt-5 font-medium">
+              <span className="font-bold text-blue-600">1,200+</span> people already on the waitlist
             </p>
           </div>
         )}
 
         {/* ── STEP 2: Details Form ── */}
         {step === 'details' && (
-          <div className="bg-white/80 backdrop-blur-xl border border-zinc-200/80 rounded-[2rem] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-white/40 backdrop-blur-[40px] border border-white/50 rounded-[2.5rem] p-10 shadow-[0_32px_64px_rgba(0,0,0,0.1)] animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Back */}
             <button
               onClick={() => setStep('role')}
@@ -185,7 +185,7 @@ export default function WaitlistPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">
                   {isMerchant ? 'Your Name' : 'Full Name'}
                 </label>
                 <input
@@ -194,20 +194,20 @@ export default function WaitlistPage() {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder={isMerchant ? 'Jane Doe' : 'Jane Doe'}
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-zinc-400 shadow-sm"
+                  className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">Email Address</label>
+                <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Email Address</label>
                 <input
                   type="email"
                   required
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder={isMerchant ? 'founder@brand.com' : 'you@email.com'}
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-zinc-400 shadow-sm"
+                  className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm"
                 />
               </div>
 
@@ -215,18 +215,18 @@ export default function WaitlistPage() {
               {isMerchant && (
                 <>
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">Brand / Store Name</label>
+                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">Brand / Store Name</label>
                     <input
                       type="text"
                       required
                       value={form.brand}
                       onChange={(e) => setForm({ ...form, brand: e.target.value })}
                       placeholder="Your Fashion Brand"
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-zinc-400 shadow-sm"
+                      className="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-zinc-500 shadow-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">E-commerce Platform</label>
+                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wider">E-commerce Platform</label>
                     <div className="grid grid-cols-3 gap-2">
                       {PLATFORMS.map((p) => (
                         <button
@@ -249,7 +249,7 @@ export default function WaitlistPage() {
 
               {/* Referral */}
               <div>
-                <label className="block text-xs font-semibold text-zinc-500 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-zinc-700 mb-2 uppercase tracking-wider">
                   How did you hear about us? <span className="normal-case text-zinc-400 font-normal">(optional)</span>
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -310,7 +310,7 @@ export default function WaitlistPage() {
 
         {/* ── STEP 3: Success ── */}
         {step === 'success' && (
-          <div className="bg-white/80 backdrop-blur-xl border border-zinc-200/80 rounded-[2rem] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] animate-in fade-in zoom-in-95 duration-500 text-center">
+          <div className="bg-white/40 backdrop-blur-[40px] border border-white/50 rounded-[2.5rem] p-10 shadow-[0_32px_64px_rgba(0,0,0,0.1)] animate-in fade-in zoom-in-95 duration-700 text-center">
             {/* Confetti icon */}
             <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-white">
               <Icon icon="solar:confetti-bold-duotone" className="text-4xl text-blue-600" />
@@ -322,8 +322,8 @@ export default function WaitlistPage() {
             </div>
 
             <h2 className="text-3xl font-bold tracking-tight text-zinc-900 mb-2">Welcome aboard 🎉</h2>
-            <p className="text-zinc-500 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
-              Thanks, <span className="font-semibold text-zinc-800">{form.name.split(' ')[0]}</span>! We've saved your spot. We'll send an invite to <span className="font-semibold text-zinc-800">{form.email}</span> when Fittly is ready for you.
+            <p className="text-zinc-600 text-sm font-medium leading-relaxed mb-8 max-w-sm mx-auto">
+              Thanks, <span className="font-bold text-zinc-900">{form.name.split(' ')[0]}</span>! We've saved your spot. We'll send an invite to <span className="font-bold text-zinc-900">{form.email}</span> when Fittly is ready for you.
             </p>
 
             {/* Position card */}
